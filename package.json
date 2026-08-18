@@ -1,6 +1,6 @@
 {
   "name": "auto-renamer",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Auto-rename files copied into a watched folder",
   "main": "main.js",
   "license": "MIT",
