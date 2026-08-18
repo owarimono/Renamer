@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:;" />
+  <title>Auto Renamer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <svg class="goo-defs" aria-hidden="true">
+    <defs>
+      <filter id="goo">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+        <feColorMatrix in="blur" mode="matrix"
+          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -10" result="goo" />
+        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="aura" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+  <div class="toast" id="toast" aria-live="polite">
+    <span class="toast-ic">
+      <svg viewBox="0 0 20 20"><path d="M4 10.5l3.2 3.2L16 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span class="toast-body">
+      <span class="toast-title" data-i18n="renamed">Renamed</span>
+      <span class="toast-name" id="toastName"></span>
+    </span>
+  </div>
+
+  <div class="titlebar">
+    <div class="tb-brand">
+      <img class="tb-mark" src="assets/icon/icon.svg" alt="" width="15" height="15" />
+      <span class="tb-name">Auto&nbsp;Renamer</span>
+    </div>
+    <div class="tb-controls">
+      <button class="tb-btn tb-lang" id="langBtn" aria-label="Switch language" title="فارسی / English">
+        <span id="langLabel">FA</span>
+      </button>
+      <span class="tb-sep"></span>
+      <button class="tb-btn" id="min" aria-label="Minimize"><svg viewBox="0 0 12 12"><rect x="2" y="5.4" width="8" height="1.2" rx=".6"/></svg></button>
+      <button class="tb-btn" id="max" aria-label="Maximize"><svg viewBox="0 0 12 12"><rect x="2.4" y="2.4" width="7.2" height="7.2" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      <button class="tb-btn danger" id="close" aria-label="Close"><svg viewBox="0 0 12 12"><path d="M3 3l6 6M9 3l-6 6" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg></button>
+    </div>
+  </div>
+
+  <div class="viewport">
+    <!-- ===== HOME ===== -->
+    <section class="panel active" id="panel-home" data-index="0">
+      <div class="scroll">
+        <!-- hero -->
+        <header class="hero">
+          <div class="orb-wrap" title="Watch status">
+            <div class="orb" id="orb">
+              <span class="orb-core"></span>
+              <span class="orb-blob b1"></span>
+              <span class="orb-blob b2"></span>
+              <span class="orb-blob b3"></span>
+            </div>
+          </div>
+          <h1 data-i18n="appTitle">Auto&nbsp;Renamer</h1>
+          <p class="sub" data-i18n="appSub">Drop files into a watched folder — they rename &amp; number themselves.</p>
+          <div class="state-pill" id="statePill">
+            <span class="state-dot"></span>
+            <span id="status" data-i18n="idle">Idle</span>
+          </div>
+        </header>
+
+        <!-- live preview showcase -->
+        <section class="showcase">
+          <div class="showcase-head">
+            <span class="showcase-tag" data-i18n="nextFile">Next file</span>
+            <span class="showcase-live" id="showcaseLive"><span class="sl-dot"></span><span id="showcaseLiveText" data-i18n="idleShort">idle</span></span>
+          </div>
+          <div class="showcase-name" id="preview">—</div>
+          <div class="showcase-meta">
+            <span class="meta-chip"><span class="meta-k">x</span><span class="meta-v" id="mX">1</span></span>
+            <span class="meta-chip"><span class="meta-k">y</span><span class="meta-v" id="mY">1</span></span>
+            <span class="meta-chip mode"><span class="meta-v" id="mMode">sequential</span></span>
+          </div>
+        </section>
+
+        <!-- session stats -->
+        <section class="stats">
+          <div class="stat">
+            <span class="stat-v" id="statRenamed">0</span>
+            <span class="stat-k" data-i18n="statRenamed">Renamed this session</span>
+          </div>
+          <div class="stat-div"></div>
+          <div class="stat">
+            <span class="stat-v" id="statNext">1</span>
+            <span class="stat-k" data-i18n="statNext">Next number</span>
+          </div>
+        </section>
+
+        <section class="card">
+          <label class="cap" data-i18n="watchedFolder">Watched folder</label>
+          <div class="folder-row">
+            <div class="input-wrap">
+              <svg class="ic" viewBox="0 0 16 16"><path d="M1.75 3.5A1.25 1.25 0 013 2.25h3.2c.4 0 .78.19 1.02.51l.66.88c.09.12.23.19.38.19H13A1.25 1.25 0 0114.25 6v6.5A1.25 1.25 0 0113 13.75H3A1.25 1.25 0 011.75 12.5v-9z" fill="none" stroke="currentColor" stroke-width="1.1"/></svg>
+              <input id="folder" readonly data-i18n-ph="noFolder" placeholder="No folder selected" />
+            </div>
+            <button id="pick" class="btn" data-i18n="browse">Browse</button>
+          </div>
+        </section>
+
+        <section class="card">
+          <label class="cap" for="pattern" data-i18n="namingPattern">Naming pattern</label>
+          <input id="pattern" spellcheck="false" />
+          <div class="chips">
+            <button class="chip" data-token="{x}"><code>{x}</code> <span data-i18n="episode">episode</span></button>
+            <button class="chip" data-token="{y}"><code>{y}</code> <span data-i18n="part">part</span></button>
+          </div>
+        </section>
+
+        <section class="card watch-card">
+          <div class="goo-toggle" id="toggle" role="switch" aria-checked="false" tabindex="0">
+            <span class="gt-track"></span>
+            <span class="gt-thumb"></span>
+            <span class="gt-drop d1"></span>
+            <span class="gt-drop d2"></span>
+          </div>
+          <div class="watch-text">
+            <span class="watch-title" id="toggleLabel" data-i18n="startWatching">Start watching</span>
+            <span class="watch-hint" data-i18n="watchHint">Toggle to begin monitoring the folder</span>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ===== SETTINGS ===== -->
+    <section class="panel" id="panel-settings" data-index="1">
+      <div class="scroll">
+        <header class="head">
+          <h1 data-i18n="settings">Settings</h1>
+          <p class="sub" data-i18n="settingsSub">Numbering behaviour, padding, and live counters.</p>
+        </header>
+
+        <section class="card">
+          <label class="cap" data-i18n="numberingMode">Numbering mode</label>
+          <div class="seg" id="modeSeg">
+            <span class="seg-pill" id="segPill"></span>
+            <button class="seg-opt active" data-mode="single">
+              <span class="seg-title" data-i18n="modeSeqTitle">Sequential</span>
+              <span class="seg-desc" data-i18n="modeSeqDesc">{x} counts up · {y} fixed</span>
+            </button>
+            <button class="seg-opt" data-mode="nested">
+              <span class="seg-title" data-i18n="modeNestTitle">Episode / Part</span>
+              <span class="seg-desc" data-i18n="modeNestDesc">y loops, x bumps</span>
+            </button>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="grid2">
+            <div>
+              <label class="cap" for="xVal" data-i18n="epCurrent">Episode {x} — current</label>
+              <input id="xVal" type="number" min="0" />
+            </div>
+            <div class="single-only">
+              <label class="cap" for="fixedY" data-i18n="partFixed">Part {y} — fixed</label>
+              <input id="fixedY" type="number" min="0" />
+            </div>
+            <div class="nested-only" hidden>
+              <label class="cap" for="yVal" data-i18n="partCurrent">Part {y} — current</label>
+              <input id="yVal" type="number" min="1" />
+            </div>
+          </div>
+          <div class="nested-only" hidden style="margin-top:14px">
+            <label class="cap" for="partsPerEp" data-i18n="partsPerEp">Parts per episode <span class="hint-inline" data-i18n="partsPerEpHint">(y resets &amp; x +1 after this many)</span></label>
+            <input id="partsPerEp" type="number" min="1" />
+          </div>
+        </section>
+
+        <section class="card">
+          <label class="cap" data-i18n="zeroPad">Zero padding</label>
+          <div class="grid2">
+            <div>
+              <label class="mini" for="xPad" data-i18n="xWidth">{x} width</label>
+              <input id="xPad" type="number" min="1" max="6" />
+            </div>
+            <div>
+              <label class="mini" for="yPad" data-i18n="yWidth">{y} width</label>
+              <input id="yPad" type="number" min="1" max="6" />
+            </div>
+          </div>
+          <p class="hint" data-i18n-html="padHint">e.g. width 2 → <code>01</code>, <code>02</code> · width 1 → <code>1</code>, <code>2</code></p>
+        </section>
+
+        <section class="card">
+          <div class="log-head">
+            <label class="cap" data-i18n="seqPreview">Sequence preview</label>
+            <button id="resetCounter" class="btn ghost tiny" data-i18n="resetCounters">Reset counters</button>
+          </div>
+          <div class="seq" id="seq"></div>
+        </section>
+      </div>
+    </section>
+
+    <!-- ===== ACTIVITY ===== -->
+    <section class="panel" id="panel-activity" data-index="2">
+      <div class="scroll">
+        <header class="head">
+          <div class="head-row">
+            <div>
+              <h1 data-i18n="activity">Activity</h1>
+              <p class="sub" data-i18n="activitySub">Every rename, in order. Newest at the bottom.</p>
+            </div>
+            <button id="clearLog" class="btn ghost" data-i18n="clear">Clear</button>
+          </div>
+        </header>
+        <div id="log" class="log"></div>
+      </div>
+    </section>
+  </div>
+
+  <nav class="tabbar" role="tablist">
+    <span class="tab-pill" id="tabPill"></span>
+    <button class="tab active" data-tab="0" role="tab" aria-selected="true">
+      <svg viewBox="0 0 18 18"><path d="M2.5 8.2 9 3l6.5 5.2M4 7.4v6.1a1 1 0 001 1h8a1 1 0 001-1V7.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span data-i18n="tabHome">Home</span>
+    </button>
+    <button class="tab" data-tab="1" role="tab" aria-selected="false">
+      <svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="2.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M9 2.5v2M9 13.5v2M2.5 9h2M13.5 9h2M4.4 4.4l1.4 1.4M12.2 12.2l1.4 1.4M13.6 4.4l-1.4 1.4M5.8 12.2l-1.4 1.4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+      <span data-i18n="tabSettings">Settings</span>
+    </button>
+    <button class="tab" data-tab="2" role="tab" aria-selected="false">
+      <svg viewBox="0 0 18 18"><path d="M3.5 4.5h11M3.5 9h11M3.5 13.5h7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span data-i18n="tabActivity">Activity</span>
+      <span class="badge" id="logBadge"></span>
+    </button>
+  </nav>
+
+  <script src="i18n.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
