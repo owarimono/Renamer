@@ -39,7 +39,7 @@ from then on names itself. No batch dialogs, no regex, no thinking.
 
 | Home | Settings | Activity |
 |:----:|:--------:|:--------:|
-| <img src="Docs/Home.png" width="280" alt="Home tab" /> | <img src="Docs/Settings.png" width="280" alt="Settings tab" /> | <img src="Docs/Activity.png" width="280" alt="Activity tab" /> |
+| <img src="Docs/Home.png" height="260" alt="Home tab" /> | <img src="Docs/Settings.png" height="260" alt="Settings tab" /> | <img src="Docs/Activity.png" height="260" alt="Activity tab" /> |
 | Pick a folder, set your pattern, flip the switch. | Numbering mode, counters, padding, and live preview. | A running log of every rename. |
 
 </div>
