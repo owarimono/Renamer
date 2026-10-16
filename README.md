@@ -33,6 +33,17 @@ kind of chore a computer should have eaten years ago. Auto Renamer turns it into
 single gesture: pick a folder, describe the name once, and every file you drop in
 from then on names itself. No batch dialogs, no regex, no thinking.
 
+## Screenshots
+
+<div align="center">
+
+| Home | Settings | Activity |
+|:----:|:--------:|:--------:|
+| <img src="Docs/Home.png" width="280" alt="Home tab" /> | <img src="Docs/Settings.png" width="280" alt="Settings tab" /> | <img src="Docs/Activity.png" width="280" alt="Activity tab" /> |
+| Pick a folder, set your pattern, flip the switch. | Numbering mode, counters, padding, and live preview. | A running log of every rename. |
+
+</div>
+
 ## Downloads
 
 Grab the latest portable build from the [**Releases page**](https://github.com/owarimono/Renamer/releases/latest).
