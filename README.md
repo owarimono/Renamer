@@ -18,6 +18,10 @@ extension untouched.
 ![License](https://img.shields.io/badge/license-MIT-e8ebf2?style=flat-square)
 ![i18n](https://img.shields.io/badge/i18n-EN%20%2F%20فارسی-c0efd5?style=flat-square)
 
+<br />
+
+[**Download**](#downloads) · [**Features**](#highlights) · [**Usage**](#usage-in-30-seconds) · [**Build**](#building-a-portable-exe)
+
 </div>
 
 ---
@@ -28,6 +32,21 @@ Renaming a batch of files by hand — `episode 1`, `episode 2`, `episode 3` — 
 kind of chore a computer should have eaten years ago. Auto Renamer turns it into a
 single gesture: pick a folder, describe the name once, and every file you drop in
 from then on names itself. No batch dialogs, no regex, no thinking.
+
+## Downloads
+
+Grab the latest portable build from the [**Releases page**](https://github.com/owarimono/Renamer/releases/latest).
+
+| Platform | File | Notes |
+| -------- | ---- | ----- |
+| Windows (Portable) | [`Auto Renamer 1.1.0.exe`](https://github.com/owarimono/Renamer/releases/download/v1.1.0/Auto%20Renamer%201.1.0.exe) | Single-file portable executable. No installation required. |
+
+> **Note:** The portable executable is a single self-contained file that can be
+> run from any location. The download size (~90–120 MB) reflects the bundled
+> Electron runtime; no additional files are needed.
+
+See the full [changelog](https://github.com/owarimono/Renamer/releases) for details
+on this and previous versions.
 
 ## Highlights
 
@@ -116,4 +135,3 @@ Settings persist to `config.json` in Electron's `userData` directory
 ## License
 
 Released under the [MIT License](LICENSE).
-
