@@ -40,11 +40,20 @@ function saveConfig() {
 
 const pad = (n, w) => String(n).padStart(Math.max(1, +w || 1), '0');
 
+// Windows-illegal chars and path separators are flattened to '_' so a pattern
+// like "../{x}" or "a/b{x}" can't escape the watched folder or throw on rename.
+// Trailing dots/spaces are illegal in Windows filenames too; an all-separator
+// pattern would otherwise produce an empty basename.
+const sanitize = (name) =>
+  name.replace(/[<>:"/\\|?*\x00-\x1f]/g, '_').replace(/[. ]+$/, '').trim() || 'file';
+
 // Build a filename for a given x/y pair.
 function buildName(x, y) {
-  return cfg.pattern
-    .replace(/\{x\}/g, pad(x, cfg.xPad))
-    .replace(/\{y\}/g, pad(y, cfg.yPad));
+  return sanitize(
+    cfg.pattern
+      .replace(/\{x\}/g, pad(x, cfg.xPad))
+      .replace(/\{y\}/g, pad(y, cfg.yPad))
+  );
 }
 
 // Advance counters after a successful rename, per mode.
@@ -58,8 +67,10 @@ function advance() {
 }
 
 // A file already produced by us — skip to avoid re-rename loop.
+// Runs the same sanitize() as buildName so our own output always matches
+// itself; otherwise a pattern with an illegal char would be renamed forever.
 function isOurs(base) {
-  const re = new RegExp('^' + cfg.pattern
+  const re = new RegExp('^' + sanitize(cfg.pattern)
     .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     .replace(/\\\{x\\\}/g, '\\d+')
     .replace(/\\\{y\\\}/g, '\\d+') + '$');
@@ -86,6 +97,11 @@ function startWatch() {
     awaitWriteFinish: { stabilityThreshold: 800, pollInterval: 100 },
   });
   watcher.on('add', onAdd);
+  // Without a placeholder every drop resolves to the same name; isOurs() then
+  // silently swallows all but the first. Warn instead of failing quiet.
+  if (!/\{(x|y)\}/.test(cfg.pattern)) {
+    log('Warning: pattern has no {x} or {y} — files after the first will be skipped.');
+  }
   log('Watching: ' + cfg.folder);
   return true;
 }
